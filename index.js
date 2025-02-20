@@ -15,6 +15,7 @@ class Big4Game {
     static targets = [[0,0],[0,2],[0,4],[-2,0],[-2,2],[-2,4],[-4,0],[-4,2],[-4,4]];
 
     constructor() {
+        this.startTime = Date.now();
         this.invincibility = {
             "bonzo": null,
             "spirit": null,
@@ -27,7 +28,7 @@ class Big4Game {
 
     getTargetCoords(i) {
         if (this.currentBlock > this.pattern.length || this.pattern?.[i]?.[0] == null) {
-            ChatLib.chat("done");
+            ChatLib.chat(`done ${((Date.now() - session.startTime) / 1000).toFixed(1)}`);
             session = new Big4Game();
             return;
         }
@@ -52,7 +53,7 @@ class Big4Game {
             let temp = this.getTargetCoords(i)?.split(",");
             if (!temp) return;
             let [x, y, z] = temp;
-            RenderLib.drawInnerEspBox(x, y, z, 1, 1, i==this.currentBlock ? 0 : 1, i==this.currentBlock ? 1 : 0, 0, i==this.currentBlock ? .75 : .25, 1, false);
+            RenderLib.drawInnerEspBox(x, y, z, 1, 1, i==this.currentBlock ? 0 : 1, i==this.currentBlock ? 1 : 0, 0, i==this.currentBlock ? .75 : .25, .5, false);
         }
     }
 
@@ -61,9 +62,18 @@ class Big4Game {
         cx = parseFloat(cx) + 0.5;
         cz = parseFloat(cz) + 18;
         cy = parseFloat(cy) - 2;
+        
         for (let dx = 0; dx < 7; dx++) {
+            let b = dx % 2 == 0;
             for (let dy = 0; dy < 7; dy++) {
-                RenderLib.drawInnerEspBox(cx + dx, cy + dy, cz, 1, 1, dx % 2 == 0 ? .15 : .25, 0, .1, .75, false);
+                let r = .1;
+                if (b) {
+                    r += .05;
+                    b = false;
+                } else {
+                    b = true;
+                }
+                RenderLib.drawInnerEspBox(cx + dx, cy + dy, cz, 1, 1, r, 0, .1, .75, false);
             }
             // RenderLib.drawInnerEspBox(cx + i, cy, cz, 1, 7, i % 2 == 0 ? .1 : .2, 0, .1, .5, false);
         }
